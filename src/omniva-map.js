@@ -95,6 +95,10 @@
     UI.innerContainer.append(UI.search, UI.list, UI.showMore);
     UI.container.append(UI.dropdown, UI.innerContainer);
 
+    // add images for css
+    UI.modal.find('.omniva-back-to-list').css('background-image', 'url("' + settings.path_to_img + 'back.png")');
+    UI.modal.find('.omniva-modal-search-btn').css('background-image', 'url("' + settings.path_to_img + 'search-w.png")');
+
     // Custom Events to hide/show terminal selector
     $(this).on('omniva.show', function (e) {
       UI.terminal_container.show();

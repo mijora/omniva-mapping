@@ -1,4 +1,7 @@
 /**Map */
+.omniva-modal * {
+  box-sizing: border-box;
+}
 
 .omniva-modal {
   display: none;
@@ -33,7 +36,7 @@
 }
 
 .omniva-modal-close {
-  color: black;
+  color: #969696;
   float: right;
   font-size: 28px;
   font-weight: bold;
@@ -157,7 +160,7 @@
 }
 
 .omniva-modal-search-btn {
-  background-image: url("../../../image/omniva/search-w.png");
+  /* background-image: url("../../../image/omniva/search-w.png"); */
   background-repeat: no-repeat;
   background-size: 20px 20px;
   background-position: center center;
@@ -172,18 +175,14 @@
   background-color: #ff6319;
 }
 
-.pac-container {
-  z-index: 10511 !important;
-}
-
 .omniva-li, .omniva-li a {
   font-size: 15px;
-  color: black !important;
+  color: black;
 }
 
 .omniva-li:hover {
   cursor: pointer;
-  color: #555 !important;
+  color: #555;
 }
 
 .omniva-li .omniva-details {
@@ -200,20 +199,12 @@
   padding: 5px;
   border-radius: 4px;
   list-style-type: none;
-  width: 100% !important;
+  width: 100%;
 }
 
 .omniva-modal-content .omniva-terminals-listing li:nth-child(even) {
   background: #f2f2f2;
 }
-
-/* .omniva-search {
-  width: 98%;
-  padding: 2px 10px;
-  border: 1px solid #555;
-  border-radius: 3px;
-  line-height: 28px;
-} */
 
 .omniva-select-terminal-btn {
   background-color: white;
@@ -306,7 +297,7 @@
   width: 59%;
   height: 100%;
   border: 1px solid black;
-  background-color: lightgray !important;
+  background-color: lightgray;
   float: left;
 }
 
@@ -331,13 +322,13 @@
 }
 
 .esri-popup__header-title {
-  font: 15px arial, sans-serif !important;
-  margin: 0px !important;
-  padding: 0px !important;
+  font: 15px arial, sans-serif;
+  margin: 0px;
+  padding: 0px;
 }
 
 .esri-popup__main-container {
-  padding: 30px !important;
+  padding: 30px;
 }
 
 /** Tooltips*/
@@ -422,12 +413,12 @@
     width: 99%;
     height: 30%;
     border: 1px solid black;
-    background-color: lightgray !important;
+    background-color: lightgray;
   }
   .omniva-search-bar {
     width: 99%;
     margin-top: 5px;
-    padding: 0px 10px;
+    padding: 10px 10px 0px;
     overflow: hidden;
   }
 
@@ -670,7 +661,7 @@ ol li {
   width: 100%;
   border-bottom: 1px solid #ccc;
   margin-bottom: 4px;
-  background-color: #ff6319!important;
+  background-color: #ff6319;
   color: #ffffff;
 }
 
@@ -736,7 +727,7 @@ ol li {
   height: 14px;
   top: 6px;
   left: 0px;
-  background-image: url("../../../image/omniva/back.png");
+  /* background-image: url("../../../image/omniva/back.png"); */
   background-size: contain;
   position: absolute;
 }
