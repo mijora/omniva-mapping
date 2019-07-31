@@ -7,6 +7,8 @@
       country_code: 'LT',
       terminals: [],
       path_to_img: 'images/omniva/',
+      selector_container: false, // false or HTMLElement
+      callback: false,
       translate: {
         modal_header: 'Omniva terminals',
         search_bar_title: 'Omniva addresses',
@@ -24,32 +26,32 @@
     var UI = {
       hook: $(this), // element thats been used to initialize omniva (normally radio button)
       // overlay used to show loading
-      loader: $('<div class="loading-overlay" style="display: none;"></div>'),
-      terminal_container: $('<div class="terminal-container" ' +
+      loader: $('<div class="omniva-loading-overlay" style="display: none;"></div>'),
+      terminal_container: $('<div class="omniva-terminal-container" ' +
         (settings.autoHide ? 'style = "display: none;"' : '') + '></div>'),
       container: $('<div class="omniva-terminals-list"></div>'),
       show_on_map_btn: $(
         '<button type="button" class="omniva-btn">' + settings.translate.show_on_map +
         '  <img src="' + settings.path_to_img + 'sasi.png" title="' + settings.translate.show_on_map + '">' +
         '</button>'),
-      dropdown: $('<div class="dropdown">' + settings.translate.select_terminal + '</div>'),
-      search: $('<input type="text" placeholder="' + settings.translate.search_bar_placeholder + '" class="search-input"/>'),
+      dropdown: $('<div class="omniva-dropdown">' + settings.translate.select_terminal + '</div>'),
+      search: $('<input type="text" placeholder="' + settings.translate.search_bar_placeholder + '" class="omniva-search-input"/>'),
       list: $('<ul></ul>'),
-      showMapBtn: $('<li><a href="#" class="show-in-map">' + settings.translate.show_on_map + '</a></li>'),
-      showMore: $('<div class="show-more"><a href="#">' + settings.translate.show_more + '</a></div>').hide(),
-      innerContainer: $('<div class="inner-container"></div>').hide(),
+      showMapBtn: $('<li><a href="#" class="omniva-show-on-map">' + settings.translate.show_on_map + '</a></li>'),
+      showMore: $('<div class="omniva-show-more"><a href="#">' + settings.translate.show_more + '</a></div>').hide(),
+      innerContainer: $('<div class="omniva-inner-container"></div>').hide(),
       // map modal
       modal: $( // id="omnivaLtModal" 
         '<div class="omniva-modal">' +
         '  <div class="omniva-modal-content">' +
         '    <div class="omniva-modal-header">' +
         '      <span class="omniva-modal-close">&times;</span>' +
-        '      <h5 style="display: inline">' + settings.translate.modal_header + '</h5>' +
+        '      <h5>' + settings.translate.modal_header + '</h5>' +
         '    </div>' +
         '    <div class="omniva-modal-body">' +
         '      <div class="omniva-map-container"></div>' +
         '      <div class="omniva-search-bar">' +
-        '        <h4 style="margin-top: 0px;">' + settings.translate.search_bar_title + '</h4>' +
+        '        <h4>' + settings.translate.search_bar_title + '</h4>' +
         '        <div class="omniva-search">' +
         '          <form>' +
         '            <input type="text" placeholder="' + settings.translate.search_bar_placeholder + '" />' +
@@ -60,7 +62,7 @@
         '          </div>' +
         '        </div>' +
         '        <div class="omniva-back-to-list" style="display:none;">' + settings.translate.search_back_to_list + '</div>' +
-        '        <div class="found_terminals omniva-scrollbar omniva-scrollbar-style-8">' +
+        '        <div class="omniva-found-terminals omniva-scrollbar omniva-scrollbar-style-8">' +
         '          <ul></ul>' +
         '        </div>' +
         '      </div>' +
@@ -79,26 +81,31 @@
     var selected = false;
     var previous_list = false;
     var show_auto_complete = false;
+    var uid = Math.random().toString(36).substr(2, 6);
 
     updateSelection();
 
     UI.modal.appendTo(document.body);
-    UI.terminal_container.insertAfter(UI.hook.parent());
-    UI.terminal_container.append(UI.loader, UI.container, UI.show_on_map_btn);//.insertAfter(UI.hook);
+    if (settings.selector_container) {
+      $(settings.selector_container).append(UI.terminal_container);
+    } else {
+      UI.terminal_container.insertAfter(UI.hook.parent());
+    }
+    UI.terminal_container.append(UI.loader, UI.container, UI.show_on_map_btn);
     UI.innerContainer.append(UI.search, UI.list, UI.showMore);
     UI.container.append(UI.dropdown, UI.innerContainer);
 
     // Custom Events to hide/show terminal selector
-    $(UI.hook).on('omniva.show', function (e) {
+    $(this).on('omniva.show', function (e) {
       UI.terminal_container.show();
     });
 
-    $(UI.hook).on('omniva.hide', function (e) {
+    $(this).on('omniva.hide', function (e) {
       UI.terminal_container.hide();
     });
 
     // Custom Events to search by 
-    $(UI.hook).on('omniva.postcode', function (e, postcode) {
+    $(this).on('omniva.postcode', function (e, postcode) {
       if (!postcode) {
         return;
       }
@@ -122,7 +129,7 @@
     });
 
     // Show on map link inside dropdown
-    UI.list.on('click', 'a.show-in-map', function (e) {
+    UI.list.on('click', 'a.omniva-show-on-map', function (e) {
       e.preventDefault();
       showModal();
     });
@@ -170,8 +177,11 @@
 
     function showModal() {
       settings.showMap = true;
-      UI.modal.find('.omniva-search input').val(UI.search.val());
-      UI.modal.find('.omniva-search button').trigger('click');
+      var searchInputEl = UI.modal.find('.omniva-search input');
+      if (searchInputEl.val() !== UI.search.val()) {
+        searchInputEl.val(UI.search.val());
+        UI.modal.find('.omniva-search button').trigger('click');
+      }
       if (selected != false) {
         zoomTo(selected.pos, selected.id);
       }
@@ -196,43 +206,69 @@
     // rebuilds terminal list inside map modal
     function refreshList(autoselect) {
       UI.modal.find('.omniva-back-to-list').hide();
-      var counter = 0;
       var city = false;
+      var hide = false;
       var html = '';
+      var foundTerminalsEl = UI.modal.find('.omniva-found-terminals');
       UI.list.html('');
-      UI.modal.find('.found_terminals').html('');
+      foundTerminalsEl.html('');
       $(terminals).each(function (i, val) {
-        var li = $('<li></li>').prop({ 'data-id': val[3], 'data-pos': [val[1], val[2]] }).text(val[0]);
-        if (val['distance'] !== undefined && val['distance'] != false) {
+        var li = $('<li></li>').attr({ 'data-id': val[3], 'data-pos': '[' + [val[1], val[2]] + ']' }).text(val[0]);
+        if (val['distance']) { // means we are searching
           li.append(' <strong>' + val['distance'] + 'km</strong>');
-          counter++;
+          hide = true;
+        }
+
+        //if (!hide || i < settings.maxShow) {
+          //console.log(i);
+          html += '<li data-pos="[' + [val[1], val[2]] + ']" data-id="' + val[3] + '" ' +
+            /* ((hide && (i + 1) >= settings.maxShow) ? 'style="display: none;"' : '')  + */ '>' +
+            '  <div>' +
+            '    <a class="omniva-li">' + (i + 1) + '. <b>' + val[0] + ' ' + (val['distance'] ? val['distance'] + ' km.' : '') + '</b></a>' +
+            '    <div id="' + makeUID(val[3]) + '" class="omniva-details" style="display:none;">' +
+            '      <small>' + val[5] + '<br/>' + val[6] + '</small><br/>' +
+            '      <button type="button" class="omniva-select-terminal-btn" data-id="' + val[3] + '">' + settings.translate.select_terminal + '</button>' +
+            '    </div>' +
+            '  </div></li>';
+        //}
+
+        //counter++;
+        /* REFACTORING NEEDED */
+        /* if (val['distance'] !== undefined && val['distance'] != false) {
+          li.append(' <strong>' + val['distance'] + 'km</strong>');
+          hide = true;
+          //counter++;
           if (settings.showMap == true && counter <= settings.maxShow) {
-            html += '<li data-pos="[' + [val[1], val[2]] + ']" data-id="' + val[3] + '" ><div><a class="omniva-li">' + counter + '. <b>' + val[0] + '</b></a> <b>' + val['distance'] + ' km.</b>\
-                                <div align="left" id="omn-'+ val[3] + '" class="omniva-details" style="display:none;"><small>\
+            html += '<li data-pos="[' + [val[1], val[2]] + ']" data-id="' + val[3] + '" ><div><a class="omniva-li">' + (i + 1) + '. <b>' + val[0] + '</b></a> <b>' + val['distance'] + ' km.</b>\
+                                <div align="left" id="'+ makeUID(val[3]) + '" class="omniva-details" style="display:none;"><small>\
                                 '+ val[5] + ' <br/>' + val[6] + '</small><br/>\
-                                <button type="button" class="btn-marker" style="font-size:14px; padding:0px 5px;margin-bottom:10px; margin-top:5px;height:25px;" data-id="'+ val[3] + '">' + settings.translate.select_terminal + '</button>\
+                                <button type="button" class="omniva-select-terminal-btn" data-id="'+ val[3] + '">' + settings.translate.select_terminal + '</button>\
                                 </div>\
                                 </div></li>';
           }
         } else {
           if (settings.showMap == true) {
             html += '<li data-pos="[' + [val[1], val[2]] + ']" data-id="' + val[3] + '" ><div><a class="omniva-li">' + (i + 1) + '. <b>' + val[0] + '</b></a>\
-                                <div align="left" id="omn-'+ val[3] + '" class="omniva-details" style="display:none;"><small>\
+                                <div align="left" id="'+ makeUID(val[3]) + '" class="omniva-details" style="display:none;"><small>\
                                 '+ val[5] + ' <br/>' + val[6] + '</small><br/>\
-                                <button type="button" class="btn-marker" style="font-size:14px; padding:0px 5px;margin-bottom:10px; margin-top:5px;height:25px;" data-id="'+ val[3] + '">' + settings.translate.select_terminal + '</button>\
+                                <button type="button" class="omniva-select-terminal-btn" data-id="'+ val[3] + '">' + settings.translate.select_terminal + '</button>\
                                 </div>\
                                 </div></li>';
           }
-        }
+        } */
+        /* END OF NEED */
+
+
+
         if (selected != false && selected.id == val[3]) {
           li.addClass('selected');
         }
-        if (counter > settings.maxShow) {
+        if (hide &&/* counter */ (i + 1) > settings.maxShow) {
           li.hide();
         }
         if (val[4] != city) {
-          var li_city = $('<li class = "city">' + val[4] + '</li>');
-          if (counter > settings.maxShow) {
+          var li_city = $('<li class = "omniva-city">' + val[4] + '</li>');
+          if (hide &&/* counter */ (i + 1) > settings.maxShow) {
             li_city.hide();
           }
           UI.list.append(li_city);
@@ -241,14 +277,14 @@
         UI.list.append(li);
       });
       UI.list.find('li').on('click', function () {
-        if (!$(this).hasClass('city')) {
+        if (!$(this).hasClass('omniva-city')) {
           UI.list.find('li').removeClass('selected');
           $(this).addClass('selected');
           selectOption($(this));
         }
       });
       if (autoselect == true) {
-        var first = UI.list.find('li:not(.city):first');
+        var first = UI.list.find('li:not(.omniva-city):first');
         UI.list.find('li').removeClass('selected');
         first.addClass('selected');
         selectOption(first);
@@ -256,19 +292,26 @@
 
       UI.list.scrollTop(0);
       if (settings.showMap == true) {
-        UI.modal.find('.found_terminals').html('<ul class="omniva-terminals-listing" start="1">' + html + '</ul>');
+        foundTerminalsEl.html('<ul class="omniva-terminals-listing" start="1">' + html + '</ul>');
       }
     }
 
     function selectOption(option) {
-      selected = { 'id': option.prop('data-id'), 'text': option.text(), 'pos': option.prop('data-pos'), 'distance': false };
+      selected = { 'id': option.attr('data-id'), 'text': option.text(), 'pos': JSON.parse(option.attr('data-pos')), 'distance': false };
       updateSelection();
       closeDropdown();
     }
 
     function updateSelection() {
-      if (selected != false) {
-        UI.dropdown.html(selected.text);
+      if (!selected) {
+        return;
+      }
+
+      UI.dropdown.html(selected.text);
+
+      UI.hook.val(selected.id);
+      if (settings.callback) {
+        settings.callback(selected.id);
       }
     }
 
@@ -278,7 +321,7 @@
         UI.container.removeClass('open')
       } else {
         UI.innerContainer.show();
-        UI.innerContainer.find('.search-input').focus();
+        UI.innerContainer.find('.omniva-search-input').focus();
         UI.container.addClass('open');
       }
     }
@@ -348,7 +391,7 @@
       }
 
       UI.loader.show();
-      $.getJSON("https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/findAddressCandidates?" + prepAddress({ singleLine: address }) + "&sourceCountry=" + omniva_current_country + "&category=&outFields=Postal&maxLocations=1&forStorage=false&f=pjson", function (data) {
+      $.getJSON("https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/findAddressCandidates?" + prepAddress({ singleLine: address }) + "&sourceCountry=" + settings.country_code + "&category=&outFields=Postal&maxLocations=1&forStorage=false&f=pjson", function (data) {
         if (data.candidates != undefined && data.candidates.length > 0) {
           calculateDistance(data.candidates[0].location.y, data.candidates[0].location.x);
           refreshList(autoselect);
@@ -370,7 +413,7 @@
       if (address.length < 3) {
         return;
       }
-      $.getJSON("https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/suggest?" + prepAddress({ text: address }) + "&f=pjson&sourceCountry=LT&maxSuggestions=1", function (data) {
+      $.getJSON("https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/suggest?" + prepAddress({ text: address }) + "&f=pjson&sourceCountry=" + settings.country_code + "&maxSuggestions=1", function (data) {
         if (data.suggestions != undefined && data.suggestions.length > 0) {
           findPosition(data.suggestions[0].text, false);
         }
@@ -383,16 +426,15 @@
     }
 
     function initMap() {
-      //UI.modal.find('.omniva-map-container');//.html('<div id="omnivaMap"></div>');
       var mapEl = $('<div class="omniva-map"></div>')[0];
       UI.modal.find('.omniva-map-container').append(mapEl);
-      if (omniva_current_country == "LT") {
+      if (settings.country_code == "LT") {
         map = L.map(mapEl).setView([54.999921, 23.96472], 8);
       }
-      if (omniva_current_country == "LV") {
+      if (settings.country_code == "LV") {
         map = L.map(mapEl).setView([56.8796, 24.6032], 8);
       }
-      if (omniva_current_country == "EE") {
+      if (settings.country_code == "EE") {
         map = L.map(mapEl).setView([58.7952, 25.5923], 7);
       }
       L.tileLayer('https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png', {
@@ -436,17 +478,18 @@
         timeoutID = setTimeout(function () { autoComplete(omnivaSearchInputEl.val()) }, 500);
       });
 
-      $('.omniva-autocomplete ul').off('click').on('click', 'li', function () {
+      var autocompleteEl = UI.modal.find(".omniva-autocomplete");
+
+      autocompleteEl.find('ul').off('click').on('click', 'li', function () {
         omnivaSearchInputEl.val($(this).text());
         omnivaSearchFormEl.trigger('submit');
-        $('.omniva-autocomplete').hide();
+        autocompleteEl.hide();
       });
 
       // closes autocomplete inside modal
       UI.modal.click(function (e) {
-        var container = $(".omniva-autocomplete");
-        if (!container.is(e.target) && container.has(e.target).length === 0) {
-          container.hide();
+        if (!autocompleteEl.is(e.target) && autocompleteEl.has(e.target).length === 0) {
+          autocompleteEl.hide();
         }
       });
 
@@ -457,15 +500,19 @@
       omnivaSearchFormEl.off('submit').on('submit', function (e) {
         e.preventDefault();
         var postcode = omnivaSearchInputEl.val();
+        UI.search.val(postcode); // send to search input outside modal
         findPosition(postcode, false);
         omnivaSearchInputEl.blur();
         show_auto_complete = false;
       });
 
-      $('.found_terminals').on('click', 'li', function () {
+      var foundTerminalsEl = UI.modal.find('.omniva-found-terminals');
+
+      foundTerminalsEl.on('click', 'li', function () {
         zoomTo(JSON.parse($(this).attr('data-pos')), $(this).attr('data-id'));
       });
-      $('.found_terminals').on('click', 'li button', function () {
+
+      foundTerminalsEl.on('click', 'li button', function () {
         terminalSelected($(this).attr('data-id'));
       });
 
@@ -477,28 +524,28 @@
       if (!show_auto_complete) {
         return;
       }
-      $('.omniva-autocomplete ul').html('');
-      $('.omniva-autocomplete').hide();
+      var autocompleteEl = UI.modal.find('.omniva-autocomplete');
+      var autocompleteUlEl = autocompleteEl.find('ul');
+      autocompleteUlEl.html('');
+      autocompleteEl.hide();
       if (address == "" || address.length < 3) return false;
-      
-      $.getJSON("https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/suggest?" + prepAddress({ text: address }) + "&sourceCountry=" + omniva_current_country + "&f=pjson&maxSuggestions=4", function (data) {
+
+      $.getJSON("https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/suggest?" + prepAddress({ text: address }) + "&sourceCountry=" + settings.country_code + "&f=pjson&maxSuggestions=4", function (data) {
         if (data.suggestions != undefined && data.suggestions.length > 0) {
           $.each(data.suggestions, function (i, item) {
-            const li = $("<li data-magickey = '" + item.magicKey + "' data-text = '" + item.text + "'>" + item.text + "</li>");
-            $(".omniva-autocomplete ul").append(li);
+            var li = $("<li data-magickey = '" + item.magicKey + "' data-text = '" + item.text + "'>" + item.text + "</li>");
+            autocompleteUlEl.append(li);
           });
+        } else {
+          autocompleteUlEl.append('<li>' + settings.translate.place_not_found + '</li>');
         }
-        if ($(".omniva-autocomplete ul li").length == 0) {
-          $(".omniva-autocomplete ul").append('<li>' + settings.translate.place_not_found + '</li>');
-        }
-        $('.omniva-autocomplete').show();
+        autocompleteEl.show();
       });
     }
 
     function terminalDetails(id) {
-
       UI.modal.find('.omniva-details').hide();
-      id = 'omn-' + id;
+      id = makeUID(id);
       dispOmniva = document.getElementById(id)
       if (dispOmniva) {
         dispOmniva.style.display = 'block';
@@ -529,17 +576,19 @@
         return;
       }
 
-      var found_terminals = UI.modal.find('.found_terminals');
+      var foundTerminalsEl = UI.modal.find('.omniva-found-terminals');
 
       // return to previous list
       if (id === null && previous_list) {
-        found_terminals.empty().append(previous_list);
+        foundTerminalsEl.empty().append(previous_list);
         previous_list = false;
         return;
       }
 
       if (id) {
-        var terminal = found_terminals.find('li[data-id="' + id + '"]');
+        //foundTerminalsEl.find('li').hide();
+        var terminal = foundTerminalsEl.find('li[data-id="' + id + '"]');
+        //terminal.show();
         // update active marker if this is called from map
         updateActiveMarker(id);
         // check if activated terminal is in shown list
@@ -550,26 +599,30 @@
           // marker not on list, generate terminal info and enable back to list button
           var html = '';
           if (!previous_list) {
-            previous_list = found_terminals.find('.omniva-terminals-listing').detach();
+            previous_list = foundTerminalsEl.find('.omniva-terminals-listing').detach();
           }
-          $('.omniva-back-to-list').show();
+          UI.modal.find('.omniva-back-to-list').show();
 
           for (var i = 0; i < locations.length; i++) {
             if (locations[i][3] == id) {
               html += '<li data-pos="[' + [locations[i][1], locations[i][2]] + ']" data-id="' + locations[i][3] + '" >' +
                 '<div>' +
                 '  <a class="omniva-li"><b>' + locations[i][0] + '</b></a>' +
-                '  <div align="left" id="omn-' + locations[i][3] + '" class="omniva-details">' +
+                '  <div id="' + makeUID(locations[i][3]) + '" class="omniva-details">' +
                 '  <small>' + locations[i][5] + ' <br/>' + locations[i][6] + '</small><br/>' +
-                '  <button type="button" class="btn-marker" data-id="' + locations[i][3] + '">' + settings.translate.select_terminal + '</button>' +
+                '  <button type="button" class="omniva-select-terminal-btn" data-id="' + locations[i][3] + '">' + settings.translate.select_terminal + '</button>' +
                 '  </div>' +
                 '</div></li>';
               break;
             }
           }
-          found_terminals.empty().append($('<ul class="omniva-terminals-listing" start="1">' + html + '</ul>'));
+          foundTerminalsEl.empty().append($('<ul class="omniva-terminals-listing" start="1">' + html + '</ul>'));
         }
       }
+    }
+
+    function makeUID(part) {
+      return ['omniva', uid, part].join('-');
     }
 
     function zoomTo(pos, id) {

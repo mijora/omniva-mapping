@@ -8,10 +8,12 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "live-server": "^1.2.1"
+    "live-server": "^1.2.1",
+    "uglify-js": "^3.6.0"
   },
   "scripts": {
     "start": "live-server --no-browser --watch=test,src --entry-file=test/index.html --mount=/images:./src/images",
+    "minify": "uglifyjs ./src/omniva-map.js --comments --output ./dist/omniva-map.min.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [

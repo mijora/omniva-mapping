@@ -16,10 +16,12 @@
 
 <body>
   <div>
-    <label><input type="radio" name="fake" id="map-test">OmnivaMap - ON</label>
+    <label><input type="radio" name="fake" id="map-test" checked>OmnivaMap - ON</label>
     <label><input type="radio" name="fake" id="map-test-off">OmnivaMap - OFF</label>
   </div>
-
+  <hr>
+  <div id="secondary"></div>
+  <hr>
   <div>PostCode:
     <input type="text" name="postcode" id="postcode">
   </div>
@@ -27,20 +29,30 @@
   <script>
     $(document).ready(function () {
       let test = $('#map-test').omniva({ terminals: omnivaTerminals, country_code: omniva_current_country });
-      let test2 = $('#map-test-off').omniva({ terminals: omnivaTerminals, country_code: omniva_current_country, autoHide: false });
-      $('input[type="radio"][name="fake"]').on('change', function (e) {
+      let test2 = $('#map-test-off').omniva({
+        terminals: omnivaTerminals,
+        country_code: omniva_current_country,
+        autoHide: true,
+        selector_container: $('#secondary')[0],
+        callback: function (id) {
+          console.log("We got response:", id);
+        }
+      });
+      $('input[type="radio"][name="fake"]').on('click', function (e) {
         if ($(this).prop("id") == "map-test") {
           test.trigger('omniva.show');
-          // test2.trigger('omniva.hide');
+          test2.trigger('omniva.hide');
         } else {
           test.trigger('omniva.hide');
-          //test2.trigger('omniva.show');
+          test2.trigger('omniva.show');
         }
       });
 
       $('#postcode').on('change', function (e) {
         test.trigger('omniva.postcode', [$(this).val()]);
       });
+
+      test.click();
     });
 
     // Data for testing purposes

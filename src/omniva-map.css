@@ -65,6 +65,7 @@
 }
 
 .omniva-modal-header h5 {
+  display: inline;
   padding: 0px;
   margin: 0px;
   font-size: 18px;
@@ -185,6 +186,10 @@
   color: #555 !important;
 }
 
+.omniva-li .omniva-details {
+  text-align: left;
+}
+
 .omniva-modal-content .omniva-terminals-listing {
   margin: 0px;
   padding: 0px;
@@ -210,7 +215,7 @@
   line-height: 28px;
 } */
 
-.btn-marker {
+.omniva-select-terminal-btn {
   background-color: white;
   color: black;
   border: 1px solid black;
@@ -222,7 +227,7 @@
   height:25px;
 }
 
-.btn-marker:hover {
+.omniva-select-terminal-btn:hover {
   background-color: #555555;
   color: white;
 }
@@ -255,12 +260,12 @@
   bottom: 0;
 }
 
-.terminal-container {
+.omniva-terminal-container {
   position: relative;
   max-width: 500px;
 }
 
-.loading-overlay {
+.omniva-loading-overlay {
   display: block;
   position: absolute;
   top: 0;
@@ -275,7 +280,7 @@
   cursor: default;
 }
 
-.loading-overlay:before {
+.omniva-loading-overlay:before {
   display: inline-block;
   font: normal normal normal 14px/1 FontAwesome;
   font-size: inherit;
@@ -319,6 +324,10 @@
   /*padding-top: 4px;
     padding-right: 4px;*/
   padding-left: 26px;
+}
+
+.omniva-search-bar h4 {
+  margin-top: 0px;
 }
 
 .esri-popup__header-title {
@@ -460,10 +469,10 @@ ol li {
   .omniva-modal-body {
     padding: 0;
   }
-  .found_terminals.omniva-scrollbar {
+  .omniva-found-terminals.omniva-scrollbar {
     max-height: 30vh;
   }
-  .terminal-container {
+  .omniva-terminal-container {
     min-width: 170px;
   }
   .omniva-search input {
@@ -559,7 +568,7 @@ ol li {
   max-width: 500px;
 }
 
-.omniva-terminals-list .inner-container {
+.omniva-terminals-list .omniva-inner-container {
   position: absolute;
   background: #fff;
   z-index: 100;
@@ -569,7 +578,7 @@ ol li {
   width: 100%;
 }
 
-.omniva-terminals-list .dropdown {
+.omniva-terminals-list .omniva-dropdown {
   border: 1px solid #aaa;
   border-radius: 4px;
   word-wrap: normal;
@@ -582,7 +591,7 @@ ol li {
   padding: 2px 20px 2px 5px;
 }
 
-.omniva-terminals-list.open .dropdown {
+.omniva-terminals-list.open .omniva-dropdown {
   border-bottom: none;
   border-radius: 4px 4px 0 0;
 }
@@ -597,7 +606,7 @@ ol li {
   background-color: #fff;
 }
 
-.omniva-terminals-list .dropdown:after {
+.omniva-terminals-list .omniva-dropdown:after {
   position: absolute;
   content: "";
   border-color: #888 transparent transparent transparent;
@@ -612,7 +621,7 @@ ol li {
   width: 0;
 }
 
-.omniva-terminals-list.open .dropdown:after {
+.omniva-terminals-list.open .omniva-dropdown:after {
   border-color: transparent transparent #888 transparent;
   border-width: 0px 4px 5px 4px;
 }
@@ -637,7 +646,7 @@ ol li {
   padding-left: 10px;
 }
 
-.omniva-terminals-list ul li.city {
+.omniva-terminals-list ul li.omniva-city {
   font-weight: 600;
   padding-left: 5px;
 }
@@ -655,7 +664,7 @@ ol li {
   color: #ffffff;
 }
 
-.omniva-terminals-list .search-input:focus, .omniva-terminals-list .search-input {
+.omniva-terminals-list .omniva-search-input:focus, .omniva-terminals-list .omniva-search-input {
   display: inline-block;
   padding: 2px 5px;
   width: 100%;
@@ -665,24 +674,24 @@ ol li {
   color: #ffffff;
 }
 
-.omniva-terminals-list .search-input::placeholder {
+.omniva-terminals-list .omniva-search-input::placeholder {
   /* Chrome, Firefox, Opera, Safari 10.1+ */
   color: inherit;
   opacity: 1;
   /* Firefox */
 }
 
-.omniva-terminals-list .search-input:-ms-input-placeholder {
+.omniva-terminals-list .omniva-search-input:-ms-input-placeholder {
   /* Internet Explorer 10-11 */
   color: inherit;
 }
 
-.omniva-terminals-list .search-input::-ms-input-placeholder {
+.omniva-terminals-list .omniva-search-input::-ms-input-placeholder {
   /* Microsoft Edge */
   color: inherit;
 }
 
-.omniva-terminals-list .show-more {
+.omniva-terminals-list .omniva-show-more {
   padding: 5px;
   text-align: center;
 }
