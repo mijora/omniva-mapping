@@ -1,0 +1,22 @@
+{
+  "name": "omniva-map",
+  "version": "0.1.0",
+  "description": "jQuery plugin to visualize Omniva parcel terminals.",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "live-server": "^1.2.1"
+  },
+  "scripts": {
+    "start": "live-server --no-browser --watch=test,src --entry-file=test/index.html --mount=/images:./src/images",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "omniva"
+  ],
+  "author": "",
+  "license": "ISC"
+}
