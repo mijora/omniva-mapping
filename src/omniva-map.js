@@ -21,7 +21,7 @@
       }
     }, options);
 
-    console.log('Omniva Initiated');
+    //console.log('Omniva Initiated');
 
     var UI = {
       hook: $(this), // element thats been used to initialize omniva (normally radio button)
@@ -115,7 +115,7 @@
       }
 
       UI.search.val(postcode);
-      suggest(postcode);
+      findPosition(postcode, true);
     });
 
     // Initialize leaflet map
@@ -223,46 +223,14 @@
           hide = true;
         }
 
-        //if (!hide || i < settings.maxShow) {
-          //console.log(i);
-          html += '<li data-pos="[' + [val[1], val[2]] + ']" data-id="' + val[3] + '" ' +
-            /* ((hide && (i + 1) >= settings.maxShow) ? 'style="display: none;"' : '')  + */ '>' +
-            '  <div>' +
-            '    <a class="omniva-li">' + (i + 1) + '. <b>' + val[0] + ' ' + (val['distance'] ? val['distance'] + ' km.' : '') + '</b></a>' +
-            '    <div id="' + makeUID(val[3]) + '" class="omniva-details" style="display:none;">' +
-            '      <small>' + val[5] + '<br/>' + val[6] + '</small><br/>' +
-            '      <button type="button" class="omniva-select-terminal-btn" data-id="' + val[3] + '">' + settings.translate.select_terminal + '</button>' +
-            '    </div>' +
-            '  </div></li>';
-        //}
-
-        //counter++;
-        /* REFACTORING NEEDED */
-        /* if (val['distance'] !== undefined && val['distance'] != false) {
-          li.append(' <strong>' + val['distance'] + 'km</strong>');
-          hide = true;
-          //counter++;
-          if (settings.showMap == true && counter <= settings.maxShow) {
-            html += '<li data-pos="[' + [val[1], val[2]] + ']" data-id="' + val[3] + '" ><div><a class="omniva-li">' + (i + 1) + '. <b>' + val[0] + '</b></a> <b>' + val['distance'] + ' km.</b>\
-                                <div align="left" id="'+ makeUID(val[3]) + '" class="omniva-details" style="display:none;"><small>\
-                                '+ val[5] + ' <br/>' + val[6] + '</small><br/>\
-                                <button type="button" class="omniva-select-terminal-btn" data-id="'+ val[3] + '">' + settings.translate.select_terminal + '</button>\
-                                </div>\
-                                </div></li>';
-          }
-        } else {
-          if (settings.showMap == true) {
-            html += '<li data-pos="[' + [val[1], val[2]] + ']" data-id="' + val[3] + '" ><div><a class="omniva-li">' + (i + 1) + '. <b>' + val[0] + '</b></a>\
-                                <div align="left" id="'+ makeUID(val[3]) + '" class="omniva-details" style="display:none;"><small>\
-                                '+ val[5] + ' <br/>' + val[6] + '</small><br/>\
-                                <button type="button" class="omniva-select-terminal-btn" data-id="'+ val[3] + '">' + settings.translate.select_terminal + '</button>\
-                                </div>\
-                                </div></li>';
-          }
-        } */
-        /* END OF NEED */
-
-
+        html += '<li data-pos="[' + [val[1], val[2]] + ']" data-id="' + val[3] + '">' +
+          '  <div>' +
+          '    <a class="omniva-li">' + (i + 1) + '. <b>' + val[0] + ' ' + (val['distance'] ? val['distance'] + ' km.' : '') + '</b></a>' +
+          '    <div id="' + makeUID(val[3]) + '" class="omniva-details" style="display:none;">' +
+          '      <small>' + val[5] + '<br/>' + val[6] + '</small><br/>' +
+          '      <button type="button" class="omniva-select-terminal-btn" data-id="' + val[3] + '">' + settings.translate.select_terminal + '</button>' +
+          '    </div>' +
+          '  </div></li>';
 
         if (selected != false && selected.id == val[3]) {
           li.addClass('selected');
@@ -521,7 +489,7 @@
       });
 
       // populate current position
-      getLocation();
+      //getLocation();
     }
 
     function autoComplete(address) {
