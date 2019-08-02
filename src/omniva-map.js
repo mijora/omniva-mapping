@@ -9,17 +9,24 @@
       path_to_img: 'images/omniva/',
       selector_container: false, // false or HTMLElement
       callback: false,
-      translate: {
-        modal_header: 'Omniva terminals',
-        search_bar_title: 'Omniva addresses',
-        search_bar_placeholder: 'Enter postcode/address',
-        search_back_to_list: 'Back to list',
-        select_terminal: 'Choose terminal',
-        show_on_map: 'Show on map',
-        show_more: 'Show more',
-        place_not_found: 'Place not found'
-      }
     }, options);
+
+    var defaultTranslate = {
+      modal_header: 'Omniva terminals',
+      search_bar_title: 'Omniva addresses',
+      search_bar_placeholder: 'Enter postcode/address',
+      search_back_to_list: 'Back to list',
+      select_terminal: 'Choose terminal',
+      show_on_map: 'Show on map',
+      show_more: 'Show more',
+      place_not_found: 'Place not found'
+    }
+
+    if (options.translate) {
+      settings.translate = $.extend(defaultTranslate, settings.translate);
+    } else {
+      settings.translate = defaultTranslate;
+    }
 
     //console.log('Omniva Initiated');
 
@@ -85,7 +92,7 @@
 
     updateSelection();
 
-    UI.modal.appendTo(document.body);
+    UI.modal.appendTo(UI.terminal_container);
     if (settings.selector_container) {
       $(settings.selector_container).append(UI.terminal_container);
     } else {
