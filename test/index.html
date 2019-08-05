@@ -16,8 +16,8 @@
 
 <body>
   <div>
-    <label><input type="radio" name="fake" id="map-test" checked>OmnivaMap - ON</label>
-    <label><input type="radio" name="fake" id="map-test-off">OmnivaMap - OFF</label>
+    <label><input type="radio" name="fake" id="map-test" checked>OmnivaMap - <span>ON</span></label>
+    <label><input type="radio" name="fake" id="map-test-off">OmnivaMap - <span>OFF</span></label>
   </div>
   <hr>
   <div id="secondary"></div>
@@ -28,7 +28,13 @@
 
   <script>
     $(document).ready(function () {
-      let test = $('#map-test').omniva({ terminals: omnivaTerminals, country_code: omniva_current_country });
+      let test = $('#map-test').omniva({
+        terminals: omnivaTerminals,
+        country_code: omniva_current_country,
+        callback: function (id) {
+          test.parent().find('span').text(id);
+        },
+      });
       let test2 = $('#map-test-off').omniva({
         terminals: omnivaTerminals,
         country_code: omniva_current_country,
@@ -36,9 +42,10 @@
         selector_container: $('#secondary')[0],
         callback: function (id) {
           console.log("We got response:", id);
+          test2.parent().find('span').text(id);
         },
         translate: {
-          modal_header: "Select Omniva terminal"
+          modal_header: "Omniva paštomatai"
         }
       });
       $('input[type="radio"][name="fake"]').on('click', function (e) {

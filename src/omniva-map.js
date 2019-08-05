@@ -9,6 +9,7 @@
       path_to_img: 'images/omniva/',
       selector_container: false, // false or HTMLElement
       callback: false,
+      translate: null
     }, options);
 
     var defaultTranslate = {
