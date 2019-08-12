@@ -18,6 +18,17 @@ Documentation Draft for Version: `1.0.0`
 
 #
 
+## Installation
+
+Simply add omniva-map.css and omniva-map.min.js to document head tag
+Example:
+```html
+<link rel="stylesheet" href="omniva-map.css">
+<script src="omniva-map.js" defer></script>
+```
+
+#
+
 ## Usage
 
 It should be hooked up onto HTMLElement.
@@ -72,8 +83,16 @@ In order to customize logic omniva-map listens for these events on HTMLElement i
 - `omniva.hide` - (Listens) - Hides Omniva html container.
 
 - `omniva.update.settings` - (Listens) - Work In Progress: Updates initialy set settings. Must have settings object attached.
+	Usage, when triggereing add into data array new settings object: 
+	```js
+	$('#element_with_omniva').trigger('omniva.postcode', [ { callback: function (id) { console.log(id); } } ])
+	```
 
 - `omniva.postcode` - (Listens) - Initiates search by supplied postcode and sorts terminals by distance from this location.
+	Usage, when triggereing add into data array post code to be used for searching nearby terminals: 
+	```js
+	$('#element_with_omniva').trigger('omniva.postcode', [ '98754' ])
+	```
 
 #
 
@@ -105,6 +124,7 @@ default:
 
 - `autoHide` - true or false, if set to true created html container will be hidden (to show use `omniva.show` event).
 - `maxShow` - number of terminals to show in dropdown when searching by address / post code.
+- `showMap` - DEPRECATED. Should be left as true.
 - `country_code` - LT, LV, EE - used in queries when searching by address / post code.
 - `terminals` - Omniva terminals array. REQUIRED.
 - `path_to_img` - url where omniva images is located. REQUIRED.
