@@ -1,12 +1,13 @@
-(function ($) {
+(function ($, window) {
+  window.omniva_version = (function () { return '1.0.0'; }()); // global accesible Omniva version number
   $.fn.omniva = function (options) {
     var settings = $.extend({
-      autoHide: true,
+      autoHide: false,
       maxShow: 8,
       showMap: true,
       country_code: 'LT',
       terminals: [],
-      path_to_img: 'images/omniva/',
+      path_to_img: 'image/omniva/',
       selector_container: false, // false or HTMLElement
       callback: false,
       translate: null
@@ -23,7 +24,7 @@
       place_not_found: 'Place not found'
     }
 
-    if (options.translate) {
+    if (typeof options.translate !== 'undefined') {
       settings.translate = $.extend(defaultTranslate, settings.translate);
     } else {
       settings.translate = defaultTranslate;
@@ -85,7 +86,7 @@
     var terminalIcon = null;
     var homeIcon = null;
     var map = null;
-    var terminals = settings.terminals;
+    //var terminals = settings.terminals;
     var selected = false;
     var previous_list = false;
     var show_auto_complete = false;
@@ -106,6 +107,19 @@
     // add images for css
     UI.modal.find('.omniva-back-to-list').css('background-image', 'url("' + settings.path_to_img + 'back.png")');
     UI.modal.find('.omniva-modal-search-btn').css('background-image', 'url("' + settings.path_to_img + 'search-w.png")');
+
+    // Custom Events to update settings
+    $(this).on('omniva.update.settings', function (e, new_settings) {
+      if (typeof new_settings.translate !== 'undefined') { // there is changes to translate object
+        // we are dealing with shallow copy
+        var temp = $.extend({}, settings.translate);
+        settings = $.extend(settings, new_settings);
+        // merge old translation with new
+        settings.translate = $.extend(temp, new_settings.translate);
+      } else {
+        settings = $.extend(settings, new_settings);
+      }
+    });
 
     // Custom Events to hide/show terminal selector
     $(this).on('omniva.show', function (e) {
@@ -178,7 +192,7 @@
 
     // back to list button
     UI.modal.find('.omniva-back-to-list').off('click').on('click', function () {
-      listTerminals(terminals, null);
+      listTerminals(settings.terminals, null);
       $(this).hide();
     });
 
@@ -224,7 +238,7 @@
       var foundTerminalsEl = UI.modal.find('.omniva-found-terminals');
       UI.list.html('');
       foundTerminalsEl.html('');
-      $(terminals).each(function (i, val) {
+      $(settings.terminals).each(function (i, val) {
         var li = $('<li></li>').attr({ 'data-id': val[3], 'data-pos': '[' + [val[1], val[2]] + ']' }).text(val[0]);
         if (val['distance']) { // means we are searching
           li.append(' <strong>' + val['distance'] + 'km</strong>');
@@ -315,7 +329,7 @@
 
     // sorts terminal list by title and resets distance
     function resetList() {
-      terminals.sort(function (a, b) {
+      settings.terminals.sort(function (a, b) {
         a.distance = false;
         b.distance = false;
         return a[0].localeCompare(b[0]);
@@ -323,12 +337,12 @@
     }
 
     function calculateDistance(y, x) {
-      $.each(terminals, function (key, location) {
+      $.each(settings.terminals, function (key, location) {
         distance = calcCrow(y, x, location[1], location[2]);
         location['distance'] = distance.toFixed(2);
       });
 
-      terminals.sort(function (a, b) {
+      settings.terminals.sort(function (a, b) {
         var distOne = a['distance'];
         var distTwo = b['distance'];
         return (parseFloat(distOne) - parseFloat(distTwo));
@@ -627,9 +641,9 @@
         close = true;
       }
 
-      for (var i = 0; i < terminals.length; i++) {
-        if (terminals[i][3] == terminal) {
-          selected = { 'id': terminal, 'text': terminals[i][0], 'pos': [terminals[i][1], terminals[i][2]], 'distance': false };
+      for (var i = 0; i < settings.terminals.length; i++) {
+        if (settings.terminals[i][3] == terminal) {
+          selected = { 'id': terminal, 'text': settings.terminals[i][0], 'pos': [settings.terminals[i][1], settings.terminals[i][2]], 'distance': false };
           updateSelection();
           break;
         }
@@ -643,4 +657,4 @@
     return this;
   };
 
-}(jQuery));
+}(jQuery, window));
