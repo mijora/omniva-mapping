@@ -85,13 +85,14 @@ In order to customize logic omniva-map listens for these events on HTMLElement i
 
 - `omniva.hide` - (Listens) - Hides Omniva html container.
 
-- `omniva.update.settings` - (Listens) - Work In Progress: Updates initialy set settings. Must have settings object attached.
+- `omniva.update.settings` - (Listens) - **Work In Progress:** Updates initialy set settings. Must have settings object attached.
 	Usage, when triggereing add into data array new settings object: 
 	```js
 	$('#element_with_omniva').trigger('omniva.postcode', [ { callback: function (id) { console.log(id); } } ])
 	```
 
-- `omniva.postcode` - (Listens) - Initiates search by supplied postcode and sorts terminals by distance from this location.
+- `omniva.postcode` - (Listens) - Initiates search by supplied postcode and sorts terminals by distance from this location. This event will automatically select the closest terminal.<br><br>
+Best to use Post Code as it will give the most accurate location, however it is possible to search using address string or just words no shorter than 3 symbols. <br><br>
 	Usage, when triggereing add into data array post code to be used for searching nearby terminals: 
 	```js
 	$('#element_with_omniva').trigger('omniva.postcode', [ '98754' ])
