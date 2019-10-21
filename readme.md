@@ -1,6 +1,6 @@
 # Omniva-Map
 
-Documentation Draft for Version: `1.0.0`
+Documentation Draft for Version: `1.1.0`
 
 #
 
@@ -10,8 +10,7 @@ Documentation Draft for Version: `1.0.0`
 - Leaflet (>=1.5.1)
 
 ```html
-<script src="https://code.jquery.com/jquery-3.4.1.min.js"
-  integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"></script>
 ```
@@ -27,7 +26,7 @@ Documentation Draft for Version: `1.0.0`
 Example:
 ```html
 <link rel="stylesheet" href="omniva-map.css">
-<script src="omniva-map.js" defer></script>
+<script src="omniva-map.min.js" defer></script>
 ```
 
 #
@@ -98,6 +97,10 @@ Best to use Post Code as it will give the most accurate location, however it is 
 	$('#element_with_omniva').trigger('omniva.postcode', [ '98754' ])
 	```
 
+- `omniva.select_terminal` - (Listens) - Selects parcel terminal by supplied ID (parcel terminal postcode).
+  ```js
+  $('#element_with_omniva').trigger('omniva.select_terminal', [ '88895' ])
+  ```
 #
 
 ## Settings Object
@@ -148,13 +151,14 @@ default:
   }
   ```
 
-- `callback` - function to call when terminal is selected, supplies terminal `id` (post code). Should be used when shop module expects different shipping code format than just post code. Example:
+- `callback` - function to call when terminal is selected, supplies terminal `id` (post code) and `clicked` boolean variable, `clicked` is true if terminal was selected on user action (clicked within dropdown or selected terminal on map modal). Should be used when shop module expects different shipping code format than just post code. Example:
 
   ```js
   {
-	  callback: function(id) {
+	  callback: function(id, clicked) {
 	    console.log('Selected terminal ID:', id);
-		  $('#omniva_parcel_radio').val('omnivalt.parcel_terminal_' + id);
+      $('#omniva_parcel_radio').val('omnivalt.parcel_terminal_' + id);
+      console.log('Terminal change was:', (clicked ? 'manual' : 'automatic'));
 	  }
   }
   ```
