@@ -40,8 +40,11 @@
         country_code: omniva_current_country,
         autoHide: true,
         selector_container: $('#secondary')[0],
-        callback: function (id) {
+        callback: function (id, clicked) {
           console.log("We got response:", id);
+          if (clicked) {
+            console.log('and it was manually clicked');
+          }
           test2.parent().find('span').text(id);
         },
         translate: {

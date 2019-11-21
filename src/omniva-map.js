@@ -1,5 +1,5 @@
 (function ($, window) {
-  window.omniva_version = (function () { return '1.0.0'; }()); // global accesible Omniva version number
+  window.omniva_version = (function () { return '1.1.0'; }()); // global accesible Omniva version number
   $.fn.omniva = function (options) {
     var settings = $.extend({
       autoHide: false,
@@ -91,6 +91,7 @@
     var previous_list = false;
     var show_auto_complete = false;
     var uid = Math.random().toString(36).substr(2, 6);
+    var clicked = false;
 
     updateSelection();
 
@@ -138,6 +139,15 @@
 
       UI.search.val(postcode);
       findPosition(postcode, true);
+    });
+
+    $(this).on('omniva.select_terminal', function (e, id) {
+      var selection = UI.list.find('li[data-id="' + id + '"]');
+      if (selection.length > 0) {
+        UI.list.find('li').removeClass('selected');
+        selection.addClass('selected');
+        selectOption(selection);
+      }
     });
 
     // Initialize leaflet map
@@ -274,6 +284,7 @@
         if (!$(this).hasClass('omniva-city')) {
           UI.list.find('li').removeClass('selected');
           $(this).addClass('selected');
+          clicked = true;
           selectOption($(this));
         }
       });
@@ -305,7 +316,8 @@
 
       UI.hook.val(selected.id);
       if (settings.callback) {
-        settings.callback(selected.id);
+        settings.callback(selected.id, clicked);
+        clicked = false; // reset to default
       }
     }
 
@@ -507,6 +519,7 @@
       });
 
       foundTerminalsEl.on('click', 'li button', function () {
+        clicked = true;
         terminalSelected($(this).attr('data-id'));
       });
 
