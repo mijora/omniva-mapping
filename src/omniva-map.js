@@ -1,5 +1,5 @@
 (function ($, window) {
-  window.omniva_version = (function () { return '1.1.0'; }()); // global accesible Omniva version number
+  window.omniva_version = (function () { return '1.1.1'; }()); // global accesible Omniva version number
   $.fn.omniva = function (options) {
     var settings = $.extend({
       autoHide: false,
@@ -443,8 +443,9 @@
       if (settings.country_code == "EE") {
         map = L.map(mapEl).setView([58.7952, 25.5923], 7);
       }
-      L.tileLayer('https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.omniva.lt">Omniva</a>'
+      L.tileLayer('https://maps.omnivasiunta.lt/tile/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.omniva.lt">Omniva</a>' +
+          ' | Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'
       }).addTo(map);
 
       var Icon = L.Icon.extend({
