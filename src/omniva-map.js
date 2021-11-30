@@ -1,5 +1,5 @@
 (function ($, window) {
-  window.omniva_version = (function () { return '1.1.1'; }()); // global accesible Omniva version number
+  window.omniva_version = (function () { return '1.1.2'; }()); // global accesible Omniva version number
   $.fn.omniva = function (options) {
     var settings = $.extend({
       autoHide: false,
@@ -93,6 +93,7 @@
     var uid = Math.random().toString(36).substr(2, 6);
     var clicked = false;
 
+    resetList();
     updateSelection();
 
     UI.modal.appendTo(UI.terminal_container);
@@ -249,7 +250,9 @@
       UI.list.html('');
       foundTerminalsEl.html('');
       $(settings.terminals).each(function (i, val) {
-        var li = $('<li></li>').attr({ 'data-id': val[3], 'data-pos': '[' + [val[1], val[2]] + ']' }).text(val[0]);
+        var li = $('<li></li>')
+          .attr({ 'data-id': val[3], 'data-pos': '[' + [val[1], val[2]] + ']' })
+          .html(val[0] + '<span class="omniva-terminal-address"> ( ' + val[5] + ' )</span>');
         if (val['distance']) { // means we are searching
           li.append(' <strong>' + val['distance'] + 'km</strong>');
           hide = true;
@@ -344,7 +347,7 @@
       settings.terminals.sort(function (a, b) {
         a.distance = false;
         b.distance = false;
-        return a[0].localeCompare(b[0]);
+        return a[4].localeCompare(b[4]);
       });
     }
 
