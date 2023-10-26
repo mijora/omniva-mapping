@@ -1,6 +1,6 @@
 {
   "name": "omniva-map",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "jQuery plugin to visualize Omniva parcel terminals.",
   "main": "index.js",
   "directories": {
