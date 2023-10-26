@@ -1,5 +1,5 @@
 (function ($, window) {
-  window.omniva_version = (function () { return '1.1.2'; }()); // global accesible Omniva version number
+  window.omniva_version = (function () { return '1.1.3'; }()); // global accesible Omniva version number
   $.fn.omniva = function (options) {
     var settings = $.extend({
       autoHide: false,
@@ -437,15 +437,14 @@
     function initMap() {
       var mapEl = $('<div class="omniva-map"></div>')[0];
       UI.modal.find('.omniva-map-container').append(mapEl);
-      if (settings.country_code == "LT") {
-        map = L.map(mapEl).setView([54.999921, 23.96472], 8);
-      }
-      if (settings.country_code == "LV") {
-        map = L.map(mapEl).setView([56.8796, 24.6032], 8);
-      }
-      if (settings.country_code == "EE") {
-        map = L.map(mapEl).setView([58.7952, 25.5923], 7);
-      }
+
+      let _coordsArray = [];
+      settings.terminals.forEach(item => {
+          _coordsArray.push([item[1], item[2]]);
+      });
+      let bounds = new L.LatLngBounds(_coordsArray);
+      map = L.map(mapEl).setView(bounds.getCenter(),7);
+
       L.tileLayer('https://maps.omnivasiunta.lt/tile/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.omniva.lt">Omniva</a>' +
           ' | Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'
