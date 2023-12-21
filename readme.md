@@ -114,6 +114,7 @@ default:
   country_code: 'LT',
   terminals: [],
   path_to_img: 'image/omniva/',
+  marker_img: 'sasi.png',
   selector_container: false,
   callback: false,
   translate: {
@@ -135,6 +136,7 @@ default:
 - `country_code` - LT, LV, EE - used in queries when searching by address / post code.
 - `terminals` - Omniva terminals array. REQUIRED.
 - `path_to_img` - url where omniva images is located. REQUIRED.
+- `marker_img` - file name with extension of the marker displayed on the map.
 - `selector_container` - to place Omniva html container in a custom place. Accepts HTMLElement or #id. example
 
 	```js

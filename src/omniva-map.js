@@ -8,6 +8,7 @@
       country_code: 'LT',
       terminals: [],
       path_to_img: 'image/omniva/',
+      marker_img: 'sasi.png',
       selector_container: false, // false or HTMLElement
       callback: false,
       translate: null
@@ -41,7 +42,7 @@
       container: $('<div class="omniva-terminals-list"></div>'),
       show_on_map_btn: $(
         '<button type="button" class="omniva-btn">' + settings.translate.show_on_map +
-        '  <img src="' + settings.path_to_img + 'sasi.png" title="' + settings.translate.show_on_map + '">' +
+        '  <img src="' + settings.path_to_img + settings.marker_img + '" title="' + settings.translate.show_on_map + '">' +
         '</button>'),
       dropdown: $('<div class="omniva-dropdown">' + settings.translate.select_terminal + '</div>'),
       search: $('<input type="text" placeholder="' + settings.translate.search_bar_placeholder + '" class="omniva-search-input"/>'),
@@ -466,7 +467,7 @@
       });
 
 
-      terminalIcon = new Icon({ iconUrl: settings.path_to_img + 'sasi.png' });
+      terminalIcon = new Icon({ iconUrl: settings.path_to_img + settings.marker_img });
       homeIcon = new Icon2({ iconUrl: settings.path_to_img + 'locator_img.png' });
 
       jQuery.each(settings.terminals, function (key, location) {
