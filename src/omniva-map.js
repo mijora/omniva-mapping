@@ -1,5 +1,5 @@
 (function ($, window) {
-  window.omniva_version = (function () { return '1.1.3'; }()); // global accesible Omniva version number
+  window.omniva_version = (function () { return '1.1.4'; }()); // global accesible Omniva version number
   $.fn.omniva = function (options) {
     var settings = $.extend({
       autoHide: false,
